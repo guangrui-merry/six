@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        />
+        <title>
+        </title>
+        <script src="js/mui.min.js">
+        </script>
+        <link href="css/mui.min.css" rel="stylesheet" />
+        <script type="text/javascript" charset="utf-8">
+            mui.init();
+        </script>
+        <style>
+            img.ItemBack{ width: 100%; } 
+            h3.Text{ opacity:0.5; font:1 "arial narrow"; 
+                    -webkit-box-reflect: below 5% -webkit-gradient(linear, center top, center bottom, from(transparent),color-stop(0, transparent), to(white)); }
+            .list li{ position: relative; float: left; list-style-type: none; margin-right:1%; margin-left: 1%; width: 14.5%; }
+            .OptionBar { position: absolute; top:20%; } 
+            .OptionBar img { width:100%; height: auto; } 
+            .li-item{ list-style:none; margin-left:13.75%; width: 15%; float: left; } 
+            .li-2{ list-style:none; margin-left:28.33%; width: 15%; float: left; } 
+            .li-1{ list-style:none; margin-left:42.5%; width: 15%; float: left; }
+        </style>
+    </head>
+    
+    <body style="position: absolute;width: 100%;height: 100%;">
+        <div class="mui-content" style="position:relative;top:0;width:100%;height:100%;background-color: #F5A623">
+            <div id="bar" class="list" style="position:absolute;width: 99%;height: 30%; margin-left: 0.5%;margin-right: 0.5%;">
+                <li id="1" class="Item">
+                    <img class="ItemBack" src="assets/renBar.png" />
+                </li>
+                <li id="2" class="Item">
+                    <img class="ItemBack" src="assets/diBar.png" />
+                </li>
+                <li id="3" class="Item">
+                    <img class="ItemBack" src="assets/shiBar.png" />
+                </li>
+                <li id="4" class="Item">
+                    <img class="ItemBack" src="assets/wuBar.png" />
+                </li>
+                <li id="5" class="Item">
+                    <img class="ItemBack" src="assets/danweiBar.png" />
+                </li>
+                <li id="6" class="Item">
+                    <img class="ItemBack" src="assets/zerenBar.png" />
+                </li>
+            </div>
+            <canvas id="canvas" style="position:absolute;left:0;bottom: 0%;width: 100%;height: 20%;">
+                <img id="scrollBar" src="assets/scrollbar.png" style="width: 99%;left: 0.5%;bottom: 15%;"
+                />
+            </canvas>
+            <div id="ballContainer" class="ballContainer" style="position:relative;width: 100%;height: 70%;top: 30%;left:0;background-color: transparent;">
+                <!-- <h5 id="xy" style="position: absolute;top: 30%;width: 100%;height:
+                20%;background-color: bisque;"></h5>-->
+                <div id="OptionBar" class="OptionBar">
+                </div>
+                <h3 id="text" class="Text" style="position:absolute;top:5%;width: 100%;text-align: center;color: lightgrey;opacity: 0;">
+                    asdas
+                </h3>
+                <img id="scrollBar" src="assets/scrollbar.png" style="position: absolute; width: 99%;left: 0.5%;bottom: 10%;"
+                />
+                <img draggable="true" id="ball" src="assets/ball.png" style="width: 15%;top: 80%;left:42.5%; position: absolute;"
+                />
+            </div>
+        </div>
+    </body>
+    <script src="js/jquery.min.js">
+    </script>
+    <script>
+    var ballStyle ='';
+    function restoreState()
+    {
+    		document.getElementById('ball').style.cssText = ballStyle;
+    }
+    window.onload = function()
+    {
+    		ballStyle = document.getElementById('ball').style.cssText;
+    }
+        mui.plusReady(function() {
+            var c = document.getElementById("canvas");   // 水平边线
+            var ball = document.getElementById('ball');  // 运动球
+            c.style.height = (ball.height - (ball.width / 2)) * 2 + 'px';
+            var ctx = c.getContext("2d");
+            var ratio = getPixelRatio(ctx);
+            c.width = c.width * ratio * 1.5;
+            c.height = c.height * ratio * 1;
+
+            var ball = document.getElementById("ball");
+            //var xy = document.getElementById("xy");
+            var screenHeight = plus.screen.resolutionHeight;
+            var screenWidth = plus.screen.resolutionWidth;
+            var ballPrepareMove = false;
+            /*mui(".ballContainer").on("touchstart","#ball",function(){
+			ballPrepareMove = true;
+			console.log(ballPrepareMove);
+		});*/
+		    
+		    // 当手指触摸屏幕时候触发，即使已经有一个手指放在屏幕上也会触发
+            mui(".ballContainer").on("touchstart", "#ball",
+            function(e) {
+                e.preventDefault();
+                ball.style.left = (e.touches[0].clientX - ball.width / 2) + "px";
+                ball.style.top = (e.touches[0].clientY - ball.width / 2 - screenHeight * 0.3) + "px";
+            });
+            var top = 0;
+            // 当手指在屏幕上滑动的时候连续地触发
+            mui(".ballContainer").on("touchmove", "#ball",
+            function(e) {
+                e.preventDefault();  //阻止滚动
+                //xy.innerHTML = "x:"+e.touches[0].clientX +"y:"+e.touches[0].clientY+"top:"+ball.style.top+"height:"+plus.screen.resolutionHeight;
+                top = (e.touches[0].clientY - ball.width / 2 - screenHeight * 0.3);
+                if (top <= 0) {
+                    ball.style.top = 0 + "px";
+                    top = 0;
+                } else {
+                    if (top >= screenHeight * 0.7 - ball.height - 15) {
+                        ball.style.top = screenHeight * 0.7 - ball.height - 15 + "px";
+                        top = screenHeight * 0.7 - ball.height - 15
+                    } else {
+                        ball.style.top = top + "px";
+                    }
+                }
+                var left = (e.touches[0].clientX - ball.width / 2);
+                if (left <= 0) {
+                    ball.style.left = 0 + "px";
+                    left = 0;
+                } else {
+                    if (left >= screenWidth - ball.width) {
+                        ball.style.left = screenWidth - ball.width + "px";
+                        left = screenWidth - ball.width;
+                    } else {
+                        ball.style.left = left + "px";
+                    }
+                }
+                var b = (top + ball.width / 2 + plus.screen.resolutionHeight * 0.3) >= ((plus.screen.resolutionHeight * 0.85) - (ball.width / 2));
+                if ((top + ball.width / 2 + plus.screen.resolutionHeight * 0.3) >= ((plus.screen.resolutionHeight * 0.85) - (ball.width / 2))) {
+                    toggle(ball);
+                    console.log('bottom     ' + b);
+                    toggleOption(false);
+                } else {
+                    console.log('up    ' + b);
+                    toggleOption(true);
+                }
+            });
+            // 当手指从屏幕上离开的时候触发
+            mui(".ballContainer").on("touchend", "#ball",
+            function() {
+                console.log("touchend");
+                var b = (top + ball.width / 2 + plus.screen.resolutionHeight * 0.3) >= ((plus.screen.resolutionHeight * 0.85) - (ball.width / 2));
+                if ((top + ball.width / 2 + plus.screen.resolutionHeight * 0.3) >= ((plus.screen.resolutionHeight * 0.85) - (ball.width / 2))) {
+                    console.log('notchoose  ' + b);
+                } else {
+                    console.log('choose   ' + b);
+                    doChosen();
+                }
+            });
+            //draw(0,0);
+        });
+
+        function doChosen() {
+            var options = document.getElementById('OptionBar').children;
+            
+            var ballheight = document.getElementById("ball").offsetHeight;
+            var ballwidth = document.getElementById('ball').offsetWidth;
+            var balltop = document.getElementById('ball').offsetTop + (ballwidth / 2);
+            var ballleft = document.getElementById('ball').offsetLeft + (ballwidth / 2);
+
+            for (var i = 0; i < options.length; i++) {
+                var holewidth = options[i].children[1].offsetWidth;
+                var holeheight = options[i].children[1].offsetHeight;
+                var holetop = options[i].children[1].offsetTop + document.getElementById('OptionBar').offsetTop;
+                var holeleft = options[i].children[1].offsetLeft;
+                //console.log((document.getElementById('OptionBar').offsetTop));
+                var up = holetop;
+                var down = holetop + holeheight;
+                var left = holeleft;
+                var right = holeleft + holewidth;
+                if (balltop >= up && balltop <= down && ballleft >= left && ballleft <= right) {
+                    console.log("in");
+                    
+                    // CSS样式和值、动画速度、animate函数执行完后执行的函数
+                    $('#ball').animate({
+                        left: holeleft,
+                        top: holetop
+                    },
+                    'fast',
+                    function() {
+                        $('#ball').animate({
+                        	height: ballheight,
+                            width: holewidth,
+                            left: holeleft,
+                            top: holetop
+//                          height: 0,
+//                          width: 0,
+//                          left: '+=' + (ballwidth / 2),
+//                          top: '+=' + (ballwidth / 2)
+                        },
+                        'slow', action(selectNum, i));
+                    });
+                    //action(selectNum,i);
+                    return;
+                } else {
+                    console.log('out');
+                }
+
+            }
+        }
+
+		function openWeb(URL,ID,json)
+		{
+			var webView = mui.openWindow({
+			                url:URL,
+			                id: ID,
+			                styles: {
+			                    top: 0,
+			                    //新页面顶部位置
+			                    bottom: 0,
+			                    //新页面底部位置
+			                    //width:100%,//新页面宽度，默认为100%
+			                    //height:100%,//新页面高度，默认为100%
+			                },
+			                extras: {
+			                    Json: json,
+			                    //自定义扩展参数，可以用来处理页面间传值			        
+			                },
+			                createNew: true,
+			                //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+			                show: {
+			                    autoShow: true,
+			                    //页面loaded事件发生后自动显示，默认为true
+			                    aniShow: 'slide-in-bottom',
+			                    //页面显示动画，默认为”slide-in-right“；
+			                    duration: 500 //页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+			                },
+			                waiting: {
+			                    autoShow: true,
+			                    //自动显示等待框，默认为true
+			                    title: '正在加载...',
+			                    //等待对话框上显示的提示内容
+			                    options: {
+			                        //width:waiting-dialog-widht,//等待框背景区域宽度，默认根据内容自动计算合适宽度
+			                        // height:waiting-dialog-height,//等待框背景区域高度，默认根据内容自动计算合适高度
+			                    }
+			                }
+			            });
+		}
+		
+		function ResultAction(type,json)
+		{
+			console.log(type+"       "+json);
+			switch (type){
+				case 'barcodeID':
+				{
+					openWeb('idinfo.html','idinfo',json);
+				}
+					break;
+				default:
+					break;
+			}
+		}
+		
+		// 根据不同的要素，不同选择，打开页面
+        function action(select, option) {
+            //var mask = mui.createMask(function(){});//callback为用户点击蒙版时自动执行的回调；
+            //mask.show();//显示遮罩
+            //mask.close();//关闭遮罩
+            console.log(select + "    " + option);
+            switch (select){
+            	case 1: {  //人
+            		switch (option){
+            			case 0:{
+            					openWeb('action.html','action','');
+            				}
+            				break;
+            				case 1:{
+            					openWeb('idInfo.html','idInfo','');
+            				}
+            				break;
+            				case 2:{
+            					openWeb('barcode_scan.html','scan','');
+            				}
+            				break;
+            			default:
+            				break;
+            		}
+            	}
+            		break;
+            	case 2:{  //地
+//          		switch(option){
+//          			
+//          		}
+                    openWeb('location.html','location','');
+            	}
+            		break;
+            	case 3:{ // 事
+//          		switch(option){
+//          			
+//          		}
+            	    openWeb('vedio.html','vedio','');
+            	}
+            		break;
+            	case 4:{ // 物
+//          		switch(option){
+//          			
+//          		}
+            		openWeb('camera.html','camera','');
+            	}
+            		break;
+            	case 5:{ // 组织
+//          		switch(option){
+//          			
+//          		}
+            		openWeb('organ.html','organ','');
+            	}
+            	    break;
+            	case 6:{ // 责任
+//          		switch(option){
+//          			
+//          		}
+            		openWeb('respon.html','respon','');
+            	}
+            		break;
+            	default:
+            		break;
+            }
+            
+        }
+
+        function addOption(Num) {
+            var v = document.getElementById('OptionBar');
+
+            switch (selectNum) {
+            case 1: //人
+                v.innerHTML = '<li class="li-item"><div><img  src="assets/camera.png" /></div><div ><img src="assets/xy.png"/></div></li ><li class="li-item"><div><img  src="assets/id.png" /></div><div ><img src="assets/xy.png"/></div></li ><li class="li-item"><div><img  src="assets/ewm.png" /></div><div ><img src="assets/xy.png"/></div></li >';
+                break;
+            case 2: // 地
+                v.innerHTML = '<li class="li-1"><div><img src="assets/locaton.png"/></div><div><img src="assets/xy.png"/></div></li>';
+                break;
+            case 3: // 事
+                v.innerHTML = '<li class="li-1"><div><img src="assets/voice.png"/></div><div><img src="assets/xy.png"/></div></li>';
+                break;
+            case 4: //物
+                v.innerHTML = '<li class="li-1"><div><img src="assets/cart.png"/></div><div><img src="assets/xy.png"/></div></li>';
+                break;
+            case 5: // 组织
+                v.innerHTML = '<li class="li-1"><div><img src="assets/black.png"/></div><div><img src="assets/xy.png"/></div></li>';
+                break;
+            case 6: // 责任
+                v.innerHTML = '<li class="li-1"><div><img src="assets/empty.png"/></div><div><img src="assets/xy.png"/></div></li>';
+                break;
+            default:
+                v.innerHTML = '';
+                break;
+            }
+        }
+
+        var OptionNum = 0;
+        var isVisible = false;
+        function toggleOption(b) {
+            console.log("toggleOption --"+b);
+            if (b) {
+                if (selectNum != OptionNum) {
+                    console.log("toggleOption -?? "+selectNum);
+                    OptionNum = selectNum;
+                    addOption(selectNum);
+                } else {}
+                if (!isVisible) {
+                    $('#OptionBar').animate({
+                        opacity: 1
+                    },
+                    'fast');
+                    isVisible = b;
+                }
+            } else {
+                if (isVisible) {
+                    $('#OptionBar').animate({
+                        opacity: 0
+                    },
+                    'fast');
+                    isVisible = false;
+                }
+            }
+        }
+
+        var selectNum = 0;
+        // 改变显示文字
+        function toggleText() {
+            var text = "";
+            switch (selectNum) {
+            case 1:
+                text = "人";
+                break;
+            case 2:
+                text = "地";
+                break;
+            case 3:
+                text = "事";
+                break;
+            case 4:
+                text = "物";
+                break;
+            case 5:
+                text = "组织";
+                break;
+            case 6:
+                text = "责任";
+                break;
+            default:
+                text = ""
+                break;
+            }
+            $('#text').animate({
+                opacity: "0"
+            },
+            'fast',
+            function() {
+                document.getElementById("text").innerHTML = text;
+                //console.log(text);
+                $("#text").animate({
+                    opacity: "1"
+                },
+                'fast');
+            });
+
+        }
+        
+        function toggle(ball) {
+            var ballPos = $('#ball').position().left + ball.width / 2;
+            var selWidth = (plus.screen.resolutionWidth * 0.99) / 6;
+            var left = plus.screen.resolutionWidth * 0.005;
+            var num = Math.floor((ballPos - left) / selWidth) + 1;
+            if (selectNum != num) {
+                $('#' + selectNum).animate({
+                    top: '0px'
+                },
+                'fast');
+                selectNum = num;
+                $('#' + selectNum).animate({
+                    top: '60px'
+                },
+                'fast');
+                toggleText();
+            }
+        }
+        
+        function draw(x, y) {
+            var c = document.getElementById('canvas');
+            var ballPosX = x;
+            var ballPosY = y;
+            var ball_canvas_x = (ballPosX / plus.screen.resolutionWidth) * c.width;
+            var ball_canvas_y = ((ballPosY - $('#canvas').position().top) / (plus.screen.resolutionHeight - $('#canvas').position().top)) * c.height;
+            //console.log(c.width+"     "+c.height);
+            //console.log(ball_canvas_x+"        "+ball_canvas_y);
+            drawPoint(c, ball_canvas_x, ball_canvas_y);
+        }
+        function drawPoint(c, x, y) {
+            var ctx = c.getContext('2d');
+            ctx.clearRect(0, 0, c.width, c.height);
+            var pointRadius = c.height / 20;
+            var toEdge = c.height / 20 + c.width / 80;
+            var top = c.height / 2;
+            ctx.beginPath();
+            var angle = Math.atan2(y - top, x - toEdge);
+            //console.log(angle/Math.PI*180);
+            ctx.fillStyle = "rgb(245,136,35)";
+            ctx.roundRect(toEdge, top - pointRadius, c.width - (2 * toEdge), pointRadius * 2, pointRadius);
+            ctx.fill();
+        }
+        //圆角矩形
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) {
+                r = w / 2;
+            }
+            if (h < 2 * r) {
+                r = h / 2;
+            }
+            this.beginPath();
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            // this.arcTo(x+r, y);
+            this.closePath();
+            return this;
+        }
+        CanvasRenderingContext2D.prototype.RubberBand = function(beginX, beginY, middleX, middleY, endX, endY) {
+
+            return this;
+        }
+        var getPixelRatio = function(context) {
+            var backingStore = context.backingStorePixelRatio || context.webkitBackingStorePixelRatio || context.mozBackingStorePixelRatio || context.msBackingStorePixelRatio || context.oBackingStorePixelRatio || context.backingStorePixelRatio || 1;
+            return (window.devicePixelRatio || 1) / backingStore;
+        };
+    </script>
+
+</html>

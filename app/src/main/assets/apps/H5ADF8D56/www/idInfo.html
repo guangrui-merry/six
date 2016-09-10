@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+    <style type="text/css">
+    		input.txt_input {
+		    width: 100%;
+		    height:44px;
+		    border: 1px solid white;
+		    background: url(../images/txt_input_bg.gif) no-repeat;
+		    padding: 0 5px;
+		    -moz-border-radius: 5px;
+		    -webkit-border-radius: 5px;
+		    border-radius: 5px;
+		    line-height: 36px;
+		    margin-bottom: 10px;
+		    font-size: 14px;
+		    color: white;
+		    font-family: Arial;
+		}
+		h4{
+			color: white;
+			margin-top: 0;
+			padding: 20px;
+		}
+    </style>
+</head>
+<body style="position: absolute;width: 100%;height: 100%;">
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+	    <h1 class="mui-title">人员信息录入</h1>
+	</header>
+	
+	<div class="mui-content" style="position: relative;width: 100%;height: 100%;background-color: #F5A623;">
+	    <div id="infoContainer" style="position:relative;width: 100%;height: 70%;width: 80%;left: 10%;">
+	   		<h4>姓名</h4>
+	   		<label>
+	   			<input type="text" id="username" class="txt_input txt_input2" onfocus="if (value =='姓名'){value =''}" onblur="if (value ==''){value='姓名'}" value="姓名">
+	   		</label>
+	   		<h4>身份证号</h4>
+	   		<label>
+	   			<input type="text" id="idcard" class="txt_input txt_input2" onfocus="if (value =='身份证号'){value =''}" onblur="if (value ==''){value='身份证号'}" value="身份证号">
+	   		</label>
+	    </div>
+	    <div id="confirmContainer" style="position:relative;width: 100%;height: 30%;">
+	    		<img id="confirm" class="button" style="width: 20%;position: absolute;left: 20%;bottom: 5%;" src="assets/qiu01.png" />
+	    		<img id="cancel" class="button" style="width: 20%;position: absolute;left: 60%;bottom: 5%;" src="assets/qiu02.png" />
+	    </div>
+	</div>
+</body>
+<script>
+	function init(json){
+		
+	}
+	mui.plusReady(function(){
+		mui('#confirmContainer').on('tap','.button',function(event){
+			var id = this.getAttribute("id");
+			switch (id){
+				case 'confirm':
+//				    console.log('confirm');
+				    var username = document.getElementById("username");
+				    var idcard = document.getElementById("idcard");
+				    console.log(username.value+" -- "+idcard.value);
+				    
+					break;
+				case 'cancel':
+				    mui.back();
+					break;
+				default:
+					break;
+			}
+		});
+	});
+</script>
+</html>

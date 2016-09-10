@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "net.pkusoft.six"
+        minSdkVersion 8
+        targetSdkVersion 8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile files('libs/nineoldandroids-2.4.0.jar')
+    compile files('libs/pdr.jar')
+    compile files('libs/ui.jar')
+    compile 'com.android.support:support-v4:23.1.1'
+    compile files('libs/nativeui.jar')
+    compile files('libs/camera.jar')
+    compile files('libs/barcode.jar')
+    compile files('libs/invocation.jar')
+}
